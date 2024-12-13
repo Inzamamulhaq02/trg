@@ -1,0 +1,52 @@
+chit plan dbs:
+
+User Schemes:
+
+CREATE TABLE user_schemes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    scheme_id INT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NULL, -- NULL until the scheme ends
+    status ENUM('active', 'completed', 'canceled') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (scheme_id) REFERENCES savings_schemes(scheme_id) ON DELETE CASCADE
+);
+
+Users:
+
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone VARCHAR(15) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+User Savings Schemes:
+
+CREATE TABLE savings_schemes (
+    scheme_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    total_months INT DEFAULT 12,
+    current_due_month INT DEFAULT 1,
+    start_date DATE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+Payment:
+
+CREATE TABLE payments (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    month_year DATE NOT NULL, -- YYYY-MM format for each payment period
+    amount DECIMAL(10, 2) NOT NULL,
+    status ENUM('paid', 'pending') DEFAULT 'pending',
+    paid_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    UNIQUE (user_id, month_year) -- Ensures no duplicate payments for the same month
+);
+
+

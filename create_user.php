@@ -22,44 +22,56 @@ if ($conn->connect_error) {
 }
 
 // Handle form submission to add user
-if (isset($_POST['add_user'])) {
+if (isset($_POST['add_user'])) 
+{
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
+    $phone = $_POST['phone'];
+    // $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
+    $password = $_POST['password'];
+    $conf_password = $_POST['conf_pass'];
 
-    $sql = "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $name, $email, $password);
-
-    if ($stmt->execute()) {
-        $message = "User added successfully!";
-    } else {
-        $message = "Error: " . $conn->error;
+    if($password !== $conf_password)
+    {
+        $error = "Password Does Not Match!";
     }
+   
+    else{
 
-    $stmt->close();
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $sql = "INSERT INTO users (name, email, password_hash, phone) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssss", $name, $email, $password, $phone);
+        if ($stmt->execute()) {
+            $message = "User added successfully!";
+        } else {
+            $message = "Error: " . $stmt->error;
+        }
+        $stmt->close();
+    }
 }
 
 // Handle delete request
-if (isset($_GET['delete_user'])) {
-    $id = $_GET['delete_user'];
+// if (isset($_GET['delete_user'])) {
+//     $id = $_GET['delete_user'];
 
-    $sql = "DELETE FROM users WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
+//     $sql = "DELETE FROM users WHERE id = ?";
+//     $stmt = $conn->prepare($sql);
+//     $stmt->bind_param("i", $id);
 
-    if ($stmt->execute()) {
-        $message = "User deleted successfully!";
-    } else {
-        $message = "Error: " . $conn->error;
-    }
+//     if ($stmt->execute()) {
+//         $message = "User deleted successfully!";
+//     } else {
+//         $message = "Error: " . $conn->error;
+//     }
 
-    $stmt->close();
-}
+//     $stmt->close();
+// }
 
-// Fetch all users
-$sql = "SELECT * FROM users";
-$result = $conn->query($sql);
+// // Fetch all users
+// $sql = "SELECT * FROM users";
+// $result = $conn->query($sql);
+
 ?>
 
 <!DOCTYPE html>
@@ -138,21 +150,26 @@ $result = $conn->query($sql);
     <div class="container">
         <h1>Manage Users</h1>
 
-        <?php if (isset($message)): ?>
-            <p class="message"><?php echo $message; ?></p>
-        <?php endif; ?>
-
         <div class="form-container">
             <h2>Add User</h2>
             <form method="POST" action="">
                 <input type="text" name="name" placeholder="Name" required>
                 <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password" required>
+                <input type="text" name="phone" placeholder="Phone No" required>
+                <input type="text" name="password" placeholder="Password" required>
+                <input type="text" name="conf_pass" placeholder="Conform Password" required>
+
                 <button type="submit" name="add_user">Add User</button>
             </form>
         </div>
-
-      
+<!-- success message -->
+        <?php if (isset($message)): ?>
+            <p class="message"><?php echo $message; ?></p>
+        <?php endif; ?>
+<!-- error msg -->
+        <?php if (isset($error)): ?>
+            <p class="error"><?php echo $error; ?></p>
+        <?php endif; ?>
     </div>
 </body>
 </html>

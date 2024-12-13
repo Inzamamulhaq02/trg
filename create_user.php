@@ -22,22 +22,16 @@ if ($conn->connect_error) {
 }
 
 // Handle form submission to add user
-if (isset($_POST['add_user'])) 
-{
+if (isset($_POST['add_user'])) {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $phone = $_POST['phone'];
-    // $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
     $password = $_POST['password'];
     $conf_password = $_POST['conf_pass'];
 
-    if($password !== $conf_password)
-    {
-        $error = "Password Does Not Match!";
-    }
-   
-    else{
-
+    if ($password !== $conf_password) {
+        $error = "Password does not match!";
+    } else {
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
         $sql = "INSERT INTO users (name, email, password_hash, phone) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
@@ -51,27 +45,50 @@ if (isset($_POST['add_user']))
     }
 }
 
-// Handle delete request
-// if (isset($_GET['delete_user'])) {
-//     $id = $_GET['delete_user'];
+// Handle form submission to delete selected users
+if (isset($_POST['delete_selected'])) {
+    if (!empty($_POST['selected_users'])) {
+        // Get selected user IDs
+        $selected_users = $_POST['selected_users'];
+        
+        // Check if selected_users is an array and contains values
+        if (is_array($selected_users) && count($selected_users) > 0) {
+            $placeholders = implode(',', array_fill(0, count($selected_users), '?'));
 
-//     $sql = "DELETE FROM users WHERE id = ?";
-//     $stmt = $conn->prepare($sql);
-//     $stmt->bind_param("i", $id);
+            // Prepare the delete query
+            $sql = "DELETE FROM users WHERE user_id IN ($placeholders)";
+            $stmt = $conn->prepare($sql);
 
-//     if ($stmt->execute()) {
-//         $message = "User deleted successfully!";
-//     } else {
-//         $message = "Error: " . $conn->error;
-//     }
+            if ($stmt === false) {
+                // Handle error with preparing the statement
+                die("Error preparing query: " . $conn->error);
+            }
 
-//     $stmt->close();
-// }
+            // Bind the parameters dynamically
+            $stmt->bind_param(str_repeat('i', count($selected_users)), ...$selected_users);
 
-// // Fetch all users
-// $sql = "SELECT * FROM users";
-// $result = $conn->query($sql);
+            if ($stmt->execute()) {
+                $error = "Selected users deleted successfully!";
+            } else {
+                $error = "Error: " . $stmt->error;
+            }
+            $stmt->close();
 
+            // Refresh the page to show updated user list
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        } else {
+            $error = "No valid users selected for deletion.";
+        }
+    } else {
+        $error = "No users selected for deletion.";
+    }
+}
+
+
+// Fetch all users
+$sql = "SELECT * FROM users";
+$result = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -115,6 +132,10 @@ if (isset($_POST['add_user']))
             color: green;
             margin-bottom: 20px;
         }
+        .error {
+            color: red;
+            margin-bottom: 20px;
+        }
         .form-container {
             margin: 20px 0;
         }
@@ -134,16 +155,6 @@ if (isset($_POST['add_user']))
         .form-container button:hover {
             background: #0056b3;
         }
-        .delete-btn {
-            color: white;
-            background: #dc3545;
-            padding: 5px 10px;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .delete-btn:hover {
-            background: #a71d2a;
-        }
     </style>
 </head>
 <body>
@@ -157,16 +168,52 @@ if (isset($_POST['add_user']))
                 <input type="email" name="email" placeholder="Email" required>
                 <input type="text" name="phone" placeholder="Phone No" required>
                 <input type="text" name="password" placeholder="Password" required>
-                <input type="text" name="conf_pass" placeholder="Conform Password" required>
+                <input type="text" name="conf_pass" placeholder="Confirm Password" required>
 
                 <button type="submit" name="add_user">Add User</button>
             </form>
         </div>
-<!-- success message -->
+
+        
+
+        <!-- User List -->
+        <h2>Existing Users</h2>
+        <form method="POST" action="">
+            <table>
+                <tr>
+                    <th>Select</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                </tr>
+                <?php if ($result && $result->num_rows > 0): ?>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selected_users[]" value="<?php echo $row['user_id']; ?>">
+                            </td>
+
+                            <td><?php echo $row['name']; ?></td>
+                            <td><?php echo $row['email']; ?></td>
+                            <td><?php echo $row['phone']; ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="5">No users found.</td>
+                    </tr>
+                <?php endif; ?>
+            </table>
+            <button type="submit" name="delete_selected" 
+                    onclick="return confirm('Are you sure you want to delete the selected users?')">Delete Selected</button>
+        </form>
+
+        <!-- Success message -->
         <?php if (isset($message)): ?>
             <p class="message"><?php echo $message; ?></p>
         <?php endif; ?>
-<!-- error msg -->
+
+        <!-- Error message -->
         <?php if (isset($error)): ?>
             <p class="error"><?php echo $error; ?></p>
         <?php endif; ?>

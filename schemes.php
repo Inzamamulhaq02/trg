@@ -123,8 +123,8 @@ require 'deleteschemes.php';
         <form action="" method="POST">
         <input type="text" name="scheme_id" placeholder="scheme_id">
         <input type="text" name="scheme_name" placeholder="name">
-        <input type="text" name="total_months" placeholder="duration">
-        <input type="text" name="monthly_due" placeholder="amount">
+        <input type="text" name="duration" placeholder="duration">
+        <input type="text" name="plan_amount" placeholder="amount">
         
         <button type="submit" name="add_plans">Add schemes</button>
         </form>
@@ -153,9 +153,9 @@ require 'deleteschemes.php';
                             </td>
 
                             <td><?php echo $row['scheme_id']; ?></td>
-                            <td><?php echo $row['name']; ?></td>
-                            <td><?php echo $row['total_months']; ?></td>
-                            <td><?php echo $row['current_due_month']; ?></td>
+                            <td><?php echo $row['scheme_name']; ?></td>
+                            <td><?php echo $row['duration']; ?></td>
+                            <td><?php echo $row['plan_amount']; ?></td>
 
                         </tr>
                     <?php endwhile; ?>

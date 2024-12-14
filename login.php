@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $pass = $_POST['password'];
 
     // Query to check credentials
-    $sql = "SELECT * FROM users WHERE name = '$user' AND password_hash = '$pass'";
+    $sql = "SELECT * FROM users WHERE name = '$user' AND password = '$pass'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {

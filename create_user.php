@@ -11,6 +11,8 @@ if (!isset($_SESSION['username'])) {
 // Database connection settings
 require 'dbconnect.php';
 
+require 'dbconnect.php';
+
 
 // Handle form submission to add user
 if (isset($_POST['add_user'])) {
@@ -75,9 +77,25 @@ if (isset($_POST['delete_selected'])) {
         $error = "No users selected for deletion.";
     }
 
+
+
+
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['assign_to_scheme']) && isset($_POST['selected_users']) && isset($_POST['scheme_id'])) {
+        $selected_users = $_POST['selected_users'];
+        $scheme_id = $_POST['scheme_id'];
 
+        foreach ($selected_users as $user_id) {
+            $stmt = $conn->prepare("INSERT INTO user_schemes (user_id, scheme_id) VALUES (?, ?)");
+            $stmt->bind_param("ii", $user_id, $scheme_id);
+            $stmt->execute();
+            $stmt->close();
+        }
+        echo "<p>Selected users have been successfully assigned to the scheme.</p>";
+    }
+}
 // Fetch all users
 $sql = "SELECT * FROM users";
 $result = $conn->query($sql);
@@ -188,6 +206,27 @@ $result = $conn->query($sql);
                             <td><?php echo $row['name']; ?></td>
                             <td><?php echo $row['email']; ?></td>
                             <td><?php echo $row['phone']; ?></td>
+                            <td>
+                               
+                    <form method="POST" action="" style="display: inline;">
+                        <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>">
+                        <select name="scheme_id" required>
+                            <option value="">Select a Scheme</option>
+                            <?php 
+                            // Fetch schemes from the database
+                            $schemes_result = $conn->query("SELECT scheme_id, scheme_name FROM savings_schemes");
+                            if ($schemes_result && $schemes_result->num_rows > 0) {
+                                while ($scheme = $schemes_result->fetch_assoc()) {
+                                   
+                                    echo '<option value="'.$scheme['scheme_id'].'">'.$scheme['scheme_name'].'</option>';
+                                }
+                            }
+                            ?>
+                        </select>
+                        <button type="submit" name="assign_to_scheme" 
+                                onclick="return confirm('Are you sure you want to assign this user to the selected scheme?')">Assign</button>
+                    </form>
+                </td>
                         </tr>
                     <?php endwhile; ?>
                 <?php else: ?>

@@ -22,91 +22,105 @@ require 'deleteschemes.php';
     <title>Document</title>
     <style>
          body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #20232a;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #282c34;
-            padding-top: 20px;
-        }
-        .sidebar a {
-            display: block;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background-color: #61dafb;
-            color: black;
-        }
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #20232a;
+    color: #ffffff;
+    display: flex;
+    height: 100vh; /* Ensures full screen height */
+}
 
-        .container {
-            width: 70%;
-            
-            margin: 20px auto;
-            margin-left: 10%;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-            color: black;
-        }
-        th {
-            background: #007bff;
-            color: white;
-        }
-        h1{
-            color: black;
-        }
-        .message {
-            color: green;
-            margin-bottom: 20px;
-        }
-        .error {
-            color: red;
-            margin-bottom: 20px;
-        }
-        .form-container {
-            margin: 20px 0;
-        }
-        .form-container input {
-            padding: 10px;
-            margin: 5px 0;
-            width: calc(100% - 20px);
-        }
-        .form-container button {
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .form-container button:hover {
-            background: #0056b3;
-        }
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #282c34;
+    padding-top: 20px;
+    z-index: 1000; /* Ensure sidebar is always on top */
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background-color: #61dafb;
+    color: black;
+}
+
+.container {
+    flex-grow: 1; /* Allows the container to take the rest of the screen space */
+    margin-left: 250px; /* Pushes content to the right of the sidebar */
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Ensures content doesn't overflow */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    color: black;
+}
+
+th {
+    background: #007bff;
+    color: white;
+}
+
+h1 {
+    color: black;
+}
+
+.message {
+    color: green;
+    margin-bottom: 20px;
+}
+
+.error {
+    color: red;
+    margin-bottom: 20px;
+}
+
+.form-container {
+    margin: 20px 0;
+}
+
+.form-container input {
+    padding: 10px;
+    margin: 5px 0;
+    width: calc(100% - 20px);
+}
+
+.form-container button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background: #0056b3;
+}
+
     </style>
 
 </head>
@@ -115,20 +129,26 @@ require 'deleteschemes.php';
 
 
 <div class="container">
-       
+    <?php include 'sidebar.php';?>
 
-        <div class="form-container">
-        <div>
-        <h1>add schemes</h1>
-        <form action="" method="POST">
-        <input type="text" name="scheme_id" placeholder="scheme_id">
-        <input type="text" name="scheme_name" placeholder="name">
-        <input type="text" name="duration" placeholder="duration">
-        <input type="text" name="plan_amount" placeholder="amount">
+
+    <div class="mt-4">
+            <h2>Recent Actions</h2>
+            <div class="card p-3">
+
         
-        <button type="submit" name="add_plans">Add schemes</button>
-        </form>
-    </div>
+   
+        <div class="form-container">
+            <div>
+                <h1>add schemes</h1>
+                <form action="" method="POST">
+                <input type="text" name="scheme_name" placeholder="name">
+                <input type="number" name="duration" placeholder="duration">
+                <input type="number" name="plan_amount" placeholder="amount">
+                
+                <button type="submit" name="add_plans">Add schemes</button>
+                </form>
+            </div>
         </div>
 
         
@@ -139,10 +159,9 @@ require 'deleteschemes.php';
             <table>
                 <tr>
                     <th>Select</th>
-                    <th>scheme_id</th>
-                    <th>scheme_name</th>
-                    <th>total_months</th>
-                    <th>amount</th>
+                    <th>Scheme name</th>
+                    <th>Duration</th>
+                    <th>Plan Amount</th>
                     
                 </tr>
                 <?php if ($result && $result->num_rows > 0): ?>
@@ -151,8 +170,6 @@ require 'deleteschemes.php';
                             <td>
                                 <input type="checkbox" name="selected_schemes[]" value="<?php echo $row['scheme_id']; ?>">
                             </td>
-
-                            <td><?php echo $row['scheme_id']; ?></td>
                             <td><?php echo $row['scheme_name']; ?></td>
                             <td><?php echo $row['duration']; ?></td>
                             <td><?php echo $row['plan_amount']; ?></td>
@@ -179,6 +196,9 @@ require 'deleteschemes.php';
             <p class="error"><?php echo $error; ?></p>
         <?php endif; ?>
     </div>
+
+    </div>
+        
   
 </body>
 </html>

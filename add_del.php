@@ -9,17 +9,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 // Database connection settings
-$servername = "localhost";
-$username = "root";
-$password = "root";
-$dbname = "c";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require 'dbconnect.php';
 
 if (isset($_POST['add_user'])) {
     $name = $_POST['name'];
@@ -70,7 +60,7 @@ if (isset($_POST['delete_selected'])) {
             $placeholders = implode(',', array_fill(0, count($selected_users), '?'));
 
             // Prepare the delete query
-            $sql = "DELETE FROM users WHERE id IN ($placeholders)";
+            $sql = "DELETE FROM users WHERE user_id IN ($placeholders)";
             $stmt = $conn->prepare($sql);
 
             if ($stmt === false) {
@@ -100,6 +90,27 @@ if (isset($_POST['delete_selected'])) {
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['assign_to_scheme'])  && isset($_POST['scheme_id'])) {
+       
+        $scheme_id = $_POST['scheme_id'];
+        $user_id=$_POST['user_id'];
+        // foreach ($selected_users as $user_id) {
+            $stmt = $conn->prepare("INSERT INTO user_schemes (user_id, scheme_id) VALUES (?, ?)");
+            $stmt->bind_param("ii", $user_id, $scheme_id);
+            $stmt->execute();
+            $stmt->close();
+        // }
+        
+        header('Location: '.$_SERVER['PHP_SELF'].'?success=true');
+        exit();
+    }
+   
+    
+}
+if (isset($_GET['success'])) {
+    $message="User successfully assigned to the scheme!";
+}
 
 // Fetch all users
 $sql = "SELECT * FROM users";
@@ -157,7 +168,8 @@ $result = $conn->query($sql);
                     </form>
                 </div>
             </div>
-
+           
+     
 
             <h2>Existing Users</h2>
         <form method="POST" action="">
@@ -167,17 +179,41 @@ $result = $conn->query($sql);
                     <th>Name</th>
                     <th>Email</th>
                     <th>Phone</th>
+                    <th>Actions</th>
                 </tr>
                 <?php if ($result && $result->num_rows > 0): ?>
                     <?php while ($row = $result->fetch_assoc()): ?>
-                        <tr>
+                        <tr popovertarget="myheader" >
                             <td>
-                                <input type="checkbox" name="selected_users[]" value="<?php echo $row['id']; ?>">
+                                <input type="checkbox" name="selected_users[]" value="<?php echo $row['user_id']; ?>">
                             </td>
 
                             <td><?php echo $row['name']; ?></td>
                             <td><?php echo $row['email']; ?></td>
                             <td><?php echo $row['phone']; ?></td>
+                            
+                            <td>
+                               
+                               <form method="POST" action="" style="display: inline;">
+                                  <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>">
+                                  <select name="scheme_id" required>
+                                      <option value="">Select a Scheme</option>
+                                      <?php 
+                                      // Fetch schemes from the database
+                                      $schemes_result = $conn->query("SELECT scheme_id, scheme_name FROM savings_schemes");
+                                      if ($schemes_result && $schemes_result->num_rows > 0) {
+                                          while ($scheme = $schemes_result->fetch_assoc()) {
+                                             
+                                              echo '<option value="'.$scheme['scheme_id'].'">'.$scheme['scheme_name'].'</option>';
+                                          }
+                                      }
+                                      ?>
+                                  </select>
+                                  <button type="submit" name="assign_to_scheme" 
+                                          onclick="return confirm('Are you sure you want to assign this user to the selected scheme?')">Assign</button>
+                              </form>
+                          </td>
+                            </t>
                         </tr>
                     <?php endwhile; ?>
                 <?php else: ?>
@@ -202,9 +238,27 @@ $result = $conn->query($sql);
    
 
     </div>
+    <dialog id="popover" popover >
 
+    <button onclick="document.getElementById('popover').close()">Close</button>
+</dialog>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+     document.querySelectorAll('table tbody tr').forEach(row => {
+        row.addEventListener('click', () => {
+            const details = row.dataset.details;
+            const popover = document.getElementById('popover');
+            // const content = document.getElementById('popover-content');
+
+            // Update popover content
+            // content.textContent = details;
+
+            // Show the popover
+            popover.showPopover();
+        });
+    });
+</script>
 </body>
 
 
@@ -316,6 +370,12 @@ $result = $conn->query($sql);
             background: #007bff;
             color: white;
         }
+        dialog{
+            width: 60%;
+            height: 70%;
+
+        }
 
     </style>
 </html>
+

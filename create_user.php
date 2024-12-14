@@ -26,7 +26,7 @@ if (isset($_POST['add_user'])) {
         $error = "Password does not match!";
     } else {
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        $sql = "INSERT INTO users (name, email, password_hash, phone) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO users (name, email, password, phone) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssss", $name, $email, $password, $phone);
         if ($stmt->execute()) {
@@ -83,16 +83,16 @@ if (isset($_POST['delete_selected'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['assign_to_scheme']) && isset($_POST['selected_users']) && isset($_POST['scheme_id'])) {
-        $selected_users = $_POST['selected_users'];
+    if (isset($_POST['assign_to_scheme'])  && isset($_POST['scheme_id'])) {
+       
         $scheme_id = $_POST['scheme_id'];
-
-        foreach ($selected_users as $user_id) {
+        $user_id=$_POST['user_id'];
+        // foreach ($selected_users as $user_id) {
             $stmt = $conn->prepare("INSERT INTO user_schemes (user_id, scheme_id) VALUES (?, ?)");
             $stmt->bind_param("ii", $user_id, $scheme_id);
             $stmt->execute();
             $stmt->close();
-        }
+        // }
         echo "<p>Selected users have been successfully assigned to the scheme.</p>";
     }
 }
@@ -208,7 +208,7 @@ $result = $conn->query($sql);
                             <td><?php echo $row['phone']; ?></td>
                             <td>
                                
-                    <form method="POST" action="" style="display: inline;">
+                     <form method="POST" action="" style="display: inline;">
                         <input type="hidden" name="user_id" value="<?php echo $row['user_id']; ?>">
                         <select name="scheme_id" required>
                             <option value="">Select a Scheme</option>
@@ -255,3 +255,10 @@ $result = $conn->query($sql);
 <?php
 $conn->close();
 ?>
+
+
+<!-- <script>
+    document.querySelector('form',(e)=>{
+        e.preventDefault();
+    })
+</script> -->

@@ -17,13 +17,15 @@ CREATE TABLE user_schemes (
 Users:
 
 CREATE TABLE users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(100) NOT NULL,
     phone VARCHAR(15) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    istemp_pass bool default true,
     registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 User Savings Schemes:
 

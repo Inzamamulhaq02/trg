@@ -121,10 +121,9 @@ require 'deleteschemes.php';
         <div>
         <h1>add schemes</h1>
         <form action="" method="POST">
-        <input type="text" name="scheme_id" placeholder="scheme_id">
         <input type="text" name="scheme_name" placeholder="name">
-        <input type="text" name="total_months" placeholder="duration">
-        <input type="text" name="monthly_due" placeholder="amount">
+        <input type="number" name="duration" placeholder="duration">
+        <input type="number" name="plan_amount" placeholder="amount">
         
         <button type="submit" name="add_plans">Add schemes</button>
         </form>
@@ -139,10 +138,9 @@ require 'deleteschemes.php';
             <table>
                 <tr>
                     <th>Select</th>
-                    <th>scheme_id</th>
-                    <th>scheme_name</th>
-                    <th>total_months</th>
-                    <th>amount</th>
+                    <th>cheme name</th>
+                    <th>Duration</th>
+                    <th>Plan Amount</th>
                     
                 </tr>
                 <?php if ($result && $result->num_rows > 0): ?>
@@ -151,11 +149,9 @@ require 'deleteschemes.php';
                             <td>
                                 <input type="checkbox" name="selected_schemes[]" value="<?php echo $row['scheme_id']; ?>">
                             </td>
-
-                            <td><?php echo $row['scheme_id']; ?></td>
-                            <td><?php echo $row['name']; ?></td>
-                            <td><?php echo $row['total_months']; ?></td>
-                            <td><?php echo $row['current_due_month']; ?></td>
+                            <td><?php echo $row['scheme_name']; ?></td>
+                            <td><?php echo $row['duration']; ?></td>
+                            <td><?php echo $row['plan_amount']; ?></td>
 
                         </tr>
                     <?php endwhile; ?>

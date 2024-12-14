@@ -1,8 +1,8 @@
 <div class="sidebar">
-        <h3 class="text-center">Admin Dashboard</h3>
+        <a href="admin.php"><h4 class="text-center">Admin Dashboard</h4></a>
         <a href="#authentication-section" data-bs-toggle="collapse">Users</a>
         <div id="authentication-section" class="collapse">
-            <a href="create_user.php" class="ms-4">👤 Add/Delete Users</a>  
+            <a href="add_del.php" class="ms-4">👤 Add/Delete Users</a>  
             <a href="#" class="ms-4">⚙️ Manage Users</a>
             <a href="#" class="ms-4">⚡ User Logs</a>
         </div>

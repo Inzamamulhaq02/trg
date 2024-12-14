@@ -9,17 +9,8 @@ if (!isset($_SESSION['username'])) {
 }
 
 // Database connection settings
-$servername = "localhost";
-$username = "root";
-$password = "root";
-$dbname = "c";
+require 'dbconnect.php';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
 // Handle form submission to add user
 if (isset($_POST['add_user'])) {
@@ -83,6 +74,7 @@ if (isset($_POST['delete_selected'])) {
     } else {
         $error = "No users selected for deletion.";
     }
+
 }
 
 

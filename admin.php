@@ -66,22 +66,7 @@ if (!isset($_SESSION['username'])) {
 </head>
 <body>
     <!-- Sidebar -->
-    <div class="sidebar">
-    <h4 class="text-center" ><a  href="admin.php">Admin Dashboard</a></h4>
-        <a href="#authentication-section" data-bs-toggle="collapse">Users</a>
-        <div id="authentication-section" class="collapse">
-            <a href="add_del.php" class="ms-4">👤 Add/Delete Users</a>  
-            <a href="#" class="ms-4">⚙️ Manage Users</a>
-            <a href="#" class="ms-4">⚡ User Logs</a>
-        </div>
-        <a href="#store-section" data-bs-toggle="collapse">Manage</a>
-        <div id="store-section" class="collapse">
-            <a href="#" class="ms-4">✏️ Edit Rate</a>
-            <a href="#" class="ms-4">🪙 Gold Schemes</a>
-            <a href="#" class="ms-4">💳 Payments</a>
-
-        </div>
-    </div>
+   <?php include 'sidebar.php';?>
 
     <!-- Main Content -->
     <div class="main-content">

@@ -183,12 +183,16 @@ $result = $conn->query($sql);
                 </tr>
                 <?php if ($result && $result->num_rows > 0): ?>
                     <?php while ($row = $result->fetch_assoc()): ?>
-                        <tr popovertarget="myheader" >
+                        <tr  >
                             <td>
                                 <input type="checkbox" name="selected_users[]" value="<?php echo $row['user_id']; ?>">
                             </td>
-
-                            <td><?php echo $row['name']; ?></td>
+                            <td>
+                            <a href="user.php?user_id=<?php echo $row['user_id']; ?>"  
+    style="text-decoration: none; color: blue;">
+        <?php echo htmlspecialchars($row['name']); ?>
+    </a>
+     </td>
                             <td><?php echo $row['email']; ?></td>
                             <td><?php echo $row['phone']; ?></td>
                             
@@ -242,23 +246,9 @@ $result = $conn->query($sql);
 
     <button onclick="document.getElementById('popover').close()">Close</button>
 </dialog>
-    <!-- Bootstrap JS -->
+    Bootstrap JS
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-     document.querySelectorAll('table tbody tr').forEach(row => {
-        row.addEventListener('click', () => {
-            const details = row.dataset.details;
-            const popover = document.getElementById('popover');
-            // const content = document.getElementById('popover-content');
-
-            // Update popover content
-            // content.textContent = details;
-
-            // Show the popover
-            popover.showPopover();
-        });
-    });
-</script>
+   
 </body>
 
 
